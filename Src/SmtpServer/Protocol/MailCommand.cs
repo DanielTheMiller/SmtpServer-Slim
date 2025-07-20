@@ -57,23 +57,9 @@ namespace SmtpServer.Protocol
                 return false;
             }
 
-            var mailboxFilter = context.ServiceProvider.GetService<IMailboxFilterFactory, IMailboxFilter>(context, MailboxFilter.Default);
-
-            using var container = new DisposableContainer<IMailboxFilter>(mailboxFilter);
-
-            switch (await container.Instance.CanAcceptFromAsync(context, Address, size, cancellationToken).ConfigureAwait(false))
-            {
-                case true:
-                    context.Transaction.From = Address;
-                    await context.Pipe.Output.WriteReplyAsync(SmtpResponse.Ok, cancellationToken).ConfigureAwait(false);
-                    return true;
-
-                case false:
-                    await context.Pipe.Output.WriteReplyAsync(SmtpResponse.MailboxUnavailable, cancellationToken).ConfigureAwait(false);
-                    return false;
-            }
-
-            throw new SmtpResponseException(SmtpResponse.TransactionFailed);
+            context.Transaction.From = Address;
+            await context.Pipe.Output.WriteReplyAsync(SmtpResponse.Ok, cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <summary>

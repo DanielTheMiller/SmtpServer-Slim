@@ -19,7 +19,6 @@ namespace SmtpServer.ComponentModel
         IEndpointListenerFactory _endpointListenerFactory;
         IUserAuthenticatorFactory _userAuthenticatorFactory;
         ISmtpCommandFactory _smtpCommandFactory;
-        IMailboxFilterFactory _mailboxFilterFactory;
         IMessageStoreFactory _messageStoreFactory;
 
         /// <summary>
@@ -28,7 +27,6 @@ namespace SmtpServer.ComponentModel
         public ServiceProvider()
         {
             Add(UserAuthenticator.Default);
-            Add(MailboxFilter.Default);
             Add(MessageStore.Default);
         }
 
@@ -69,24 +67,6 @@ namespace SmtpServer.ComponentModel
         }
 
         /// <summary>
-        /// Add an instance of the Mailbox Filter Factory.
-        /// </summary>
-        /// <param name="mailboxFilterFactory">The mailbox filter factory.</param>
-        public void Add(IMailboxFilterFactory mailboxFilterFactory)
-        {
-            _mailboxFilterFactory = mailboxFilterFactory;
-        }
-
-        /// <summary>
-        /// Add an instance of the Mailbox Filter.
-        /// </summary>
-        /// <param name="mailboxFilter">The mailbox filter.</param>
-        public void Add(IMailboxFilter mailboxFilter)
-        {
-            _mailboxFilterFactory = new DelegatingMailboxFilterFactory(context => mailboxFilter);
-        }
-
-        /// <summary>
         /// Add an instance of the Message Store Factory.
         /// </summary>
         /// <param name="messageStoreFactory">The message store factory.</param>
@@ -124,11 +104,6 @@ namespace SmtpServer.ComponentModel
             if (serviceType == typeof(ISmtpCommandFactory))
             {
                 return _smtpCommandFactory;
-            }
-
-            if (serviceType == typeof(IMailboxFilterFactory))
-            {
-                return _mailboxFilterFactory;
             }
 
             if (serviceType == typeof(IMessageStoreFactory))

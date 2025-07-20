@@ -236,46 +236,6 @@ namespace SmtpServer.Tests
         }
 
         [Fact]
-        public void CanReturnSmtpResponseException_DoesNotQuit()
-        {
-            // arrange
-            var mailboxFilter = new DelegatingMailboxFilter(@from =>
-            {
-                throw new SmtpResponseException(SmtpResponse.AuthenticationRequired);
-
-#pragma warning disable 162
-                return true;
-#pragma warning restore 162
-            });
-
-            using (CreateServer(services => services.Add(mailboxFilter)))
-            {
-                using var client = MailClient.Client();
-
-                Assert.Throws<ServiceNotAuthenticatedException>(() => client.Send(MailClient.Message()));
-
-                client.NoOp();
-            }
-        }
-
-        [Fact]
-        public void CanReturnSmtpResponseException_SessionWillQuit()
-        {
-            // arrange
-            var mailboxFilter = new DelegatingMailboxFilter(@from => throw new SmtpResponseException(SmtpResponse.AuthenticationRequired, true));
-
-            using (CreateServer(services => services.Add(mailboxFilter)))
-            {
-                using var client = MailClient.Client();
-
-                Assert.Throws<ServiceNotAuthenticatedException>(() => client.Send(MailClient.Message()));
-
-                // no longer connected to this is invalid
-                Assert.ThrowsAny<Exception>(() => client.NoOp());
-            }
-        }
-
-        [Fact]
         public void CanForceUserAuthentication_DoesNotThrowIfLoginIsSent()
         {
             var userAuthenticator = new DelegatingUserAuthenticator((user, password) => true);

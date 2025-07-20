@@ -18,7 +18,6 @@ namespace SampleApp.Examples
                 .Build();
 
             var serviceProvider = new ServiceProvider();
-            serviceProvider.Add(new SampleMailboxFilter(TimeSpan.FromSeconds(2)));
 
             var server = new SmtpServer.SmtpServer(options, serviceProvider);
             server.SessionCreated += OnSessionCreated;
